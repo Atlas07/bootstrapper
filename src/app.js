@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const ip = require('ip');
 
 const User = require('./User');
 
@@ -11,31 +12,35 @@ app.use(
     extended: true,
   }),
 );
+
 const [port] = process.argv.slice(2);
 const users = new User();
 
 app.get('/users', (req, res) => {
   try {
-    res.json({ users: users.get() });
+    res.json({ users: users.getUsers() });
   } catch (error) {
     console.log(error);
-    res.status(400).json({ error });
+    res.status(400).json({ error: 'Provide all necessary data' });
   }
 });
 
 app.post('/user', (req, res) => {
   try {
-    const { user } = req.body;
-    users.add(user);
+    users.addUser({
+      ip: req.body.ip,
+      port: req.body.port,
+      walletAddress: req.body.walletAddress,
+    });
 
     res.json({ added: true });
-    // TODO: add broadcast to other nodes
   } catch (error) {
     console.log(error);
-    res.status(400).json({ error });
+    res.status(400).json({ error: 'Provide all necessary data' });
   }
 });
 
 app.listen(port || 5050, () => {
-  console.log(`bootstraped on port:${port}`);
+  console.log(`bootstraped on port:${port || 5050}`);
+  console.log(`ip:${ip.address()}`);
 });

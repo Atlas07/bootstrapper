@@ -4,16 +4,15 @@ class User {
   }
 
   // eslint-disable-next-line
-  add(user) {
-    if (!user.walletAddress || !user.ip || user.port) {
-      return new Error('Provide all necessary data');
+  addUser(user) {
+    if (!user.walletAddress || !user.ip || !user.port) {
+      throw new Error('Provide all necessary data');
     }
-    const { walletAddress } = user;
 
-    this.users[walletAddress] = user;
+    this.users[user.walletAddress] = { ...user };
   }
 
-  get() {
+  getUsers() {
     return this.users;
   }
 }
